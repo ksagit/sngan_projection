@@ -97,7 +97,7 @@ class Updater(chainer.training.StandardUpdater):
 
                 print(x_fake, np.sum(x_fake.data))
                 print(dis_fake)
-                print(gen_loss)
+                print(loss_gen)
 
 
 
