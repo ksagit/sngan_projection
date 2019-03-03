@@ -85,8 +85,6 @@ class Updater(chainer.training.StandardUpdater):
                 dis_fake = dis(x_fake, y=y_fake)
                 loss_gen = self.loss_gen(dis_fake=dis_fake)
 
-                
-
                 gen.cleargrads()
                 loss_gen.backward()
 

@@ -60,6 +60,9 @@ class SNLinear(Linear):
         Spectral Normalized Weight
         """
         sigma, _u, _ = max_singular_value(self.W, self.u, self.Ip)
+
+        print(sigma, _u)
+
         if self.factor:
             sigma = sigma / self.factor
         sigma = broadcast_to(sigma.reshape((1, 1)), self.W.shape)
