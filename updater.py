@@ -80,12 +80,12 @@ class Updater(chainer.training.StandardUpdater):
             if i == 0:
                 x_fake, y_fake = self._generete_samples()
                 print(x_fake)
-                _ = input()
 
                 dis_fake = dis(x_fake, y=y_fake)
                 loss_gen = self.loss_gen(dis_fake=dis_fake)
 
                 print(loss_gen)
+                _ = input()
 
                 gen.cleargrads()
                 loss_gen.backward()
