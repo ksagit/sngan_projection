@@ -79,13 +79,13 @@ class Updater(chainer.training.StandardUpdater):
         for i in range(self.n_dis):
             if i == 0:
                 x_fake, y_fake = self._generete_samples()
-                print(x_fake)
+                
 
                 dis_fake = dis(x_fake, y=y_fake)
                 loss_gen = self.loss_gen(dis_fake=dis_fake)
 
-                print(loss_gen)
-                _ = input()
+                print(x_fake)
+                print(dis_fake)
 
                 gen.cleargrads()
                 loss_gen.backward()
@@ -104,3 +104,5 @@ class Updater(chainer.training.StandardUpdater):
             loss_dis.backward()
             dis_optimizer.update()
             chainer.reporter.report({'loss_dis': loss_dis})
+
+            _ = input()
