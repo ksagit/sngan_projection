@@ -2,7 +2,10 @@ import numpy as np
 import chainer
 
 
+
 def sample_continuous(dim, batchsize, distribution='normal', xp=np):
+    xp.random.seed(0)
+
     if distribution == "normal":
         return xp.random.randn(batchsize, dim) \
             .astype(xp.float32)
