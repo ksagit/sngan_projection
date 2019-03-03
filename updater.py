@@ -29,6 +29,8 @@ def loss_hinge_gen(dis_fake):
     loss = -F.mean(dis_fake)
     return loss
 
+def checksum(model):
+    return sum(np.sum(param.data) for param in model.params())
 
 class Updater(chainer.training.StandardUpdater):
     def __init__(self, *args, **kwargs):
@@ -83,13 +85,21 @@ class Updater(chainer.training.StandardUpdater):
                 dis_fake = dis(x_fake, y=y_fake)
                 loss_gen = self.loss_gen(dis_fake=dis_fake)
 
-                print(x_fake, np.sum(x_fake.data))
-                print(dis_fake)
+                
 
                 gen.cleargrads()
                 loss_gen.backward()
+
+                print(checksum(gen))
                 gen_optimizer.update()
+                print(checksum(gen))
                 chainer.reporter.report({'loss_gen': loss_gen})
+
+                print(x_fake, np.sum(x_fake.data))
+                print(dis_fake)
+                print(gen_loss)
+
+
 
             _ = input()
 
