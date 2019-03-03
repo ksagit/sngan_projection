@@ -4,11 +4,12 @@ import chainer
 
 
 def sample_continuous(dim, batchsize, distribution='normal', xp=np):
-    xp.random.seed(0)
+    np.random.seed(0)
 
     if distribution == "normal":
-        return xp.random.randn(batchsize, dim) \
-            .astype(xp.float32)
+        arr = np.random.randn(batchsize, dim) \
+            .astype(np.float32)
+        return xp.array(arr)
     elif distribution == "uniform":
         return xp.random.uniform(-1, 1, (batchsize, dim)) \
             .astype(xp.float32)
