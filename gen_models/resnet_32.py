@@ -35,6 +35,9 @@ class ResNetGenerator(chainer.Chain):
                                    xp=self.xp) if self.n_classes > 0 else None
         if (y is not None) and z.shape[0] != y.shape[0]:
             raise ValueError('z.shape[0] != y.shape[0]')
+
+        print("Using z=", z)
+
         h = z
         h = self.l1(h)
         h = F.reshape(h, (h.shape[0], -1, self.bottom_width, self.bottom_width))
