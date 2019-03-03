@@ -2,6 +2,7 @@ import math
 import chainer
 from chainer import functions as F
 from source.links.sn_convolution_2d import SNConvolution2D
+import numpy as np
 
 
 def _downsample(x):
@@ -13,8 +14,8 @@ class Block(chainer.Chain):
     def __init__(self, in_channels, out_channels, hidden_channels=None, ksize=3, pad=1,
                  activation=F.relu, downsample=False):
         super(Block, self).__init__()
-        initializer = chainer.initializers.GlorotUniform(math.sqrt(2))
-        initializer_sc = chainer.initializers.GlorotUniform()
+        initializer = chainer.initializers.One() # chainer.initializers.GlorotUniform(math.sqrt(2))
+        initializer_sc = chainer.initializers.One() # chainer.initializers.GlorotUniform()
         self.activation = activation
         self.downsample = downsample
         self.learnable_sc = (in_channels != out_channels) or downsample
@@ -52,13 +53,18 @@ class Block(chainer.Chain):
 class OptimizedBlock(chainer.Chain):
     def __init__(self, in_channels, out_channels, ksize=3, pad=1, activation=F.relu):
         super(OptimizedBlock, self).__init__()
-        initializer = chainer.initializers.GlorotUniform(math.sqrt(2))
-        initializer_sc = chainer.initializers.GlorotUniform()
+        initializer = chainer.initializers.One() # chainer.initializers.GlorotUniform(math.sqrt(2))
+        initializer_sc = chainer.initializers.One() # chainer.initializers.GlorotUniform()
         self.activation = activation
         with self.init_scope():
             self.c1 = SNConvolution2D(in_channels, out_channels, ksize=ksize, pad=pad, initialW=initializer)
             self.c2 = SNConvolution2D(out_channels, out_channels, ksize=ksize, pad=pad, initialW=initializer)
             self.c_sc = SNConvolution2D(in_channels, out_channels, ksize=1, pad=0, initialW=initializer_sc)
+
+            self.c1.u = np.ones((1, 128)).astype(np.float32)
+            self.c2.u = np.ones((1, 128)).astype(np.float32)
+            self.c_sc.u = np.ones((1, 128)).astype(np.float32)
+
 
     def residual(self, x):
         h = x

@@ -18,8 +18,8 @@ class Block(chainer.Chain):
     def __init__(self, in_channels, out_channels, hidden_channels=None, ksize=3, pad=1,
                  activation=F.relu, upsample=False, n_classes=0):
         super(Block, self).__init__()
-        initializer = chainer.initializers.GlorotUniform(math.sqrt(2))
-        initializer_sc = chainer.initializers.GlorotUniform()
+        initializer = chainer.initializers.One() # chainer.initializers.GlorotUniform(math.sqrt(2))
+        initializer_sc = chainer.initializers.One() # chainer.initializers.GlorotUniform()
         self.activation = activation
         self.upsample = upsample
         self.learnable_sc = in_channels != out_channels or upsample
@@ -34,6 +34,7 @@ class Block(chainer.Chain):
             else:
                 self.b1 = L.BatchNormalization(in_channels)
                 self.b2 = L.BatchNormalization(hidden_channels)
+
             if self.learnable_sc:
                 self.c_sc = L.Convolution2D(in_channels, out_channels, ksize=1, pad=0, initialW=initializer_sc)
 
