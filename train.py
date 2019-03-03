@@ -81,7 +81,7 @@ def main():
     dataset = yaml_utils.load_dataset(config)
     # Iterator
     iterator = chainer.iterators.MultiprocessIterator(
-        dataset, config.batchsize, n_processes=args.loaderjob)
+        dataset, config.batchsize, n_processes=args.loaderjob, shuffle=False)
     kwargs = config.updater['args'] if 'args' in config.updater else {}
     kwargs.update({
         'models': models,

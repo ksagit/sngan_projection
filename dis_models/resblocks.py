@@ -3,7 +3,7 @@ import chainer
 from chainer import functions as F
 from source.links.sn_convolution_2d import SNConvolution2D
 import numpy as np
-from chainer import cuda
+
 
 def _downsample(x):
     # Downsample (Mean Avg Pooling with 2x2 kernel)
@@ -61,13 +61,9 @@ class OptimizedBlock(chainer.Chain):
             self.c2 = SNConvolution2D(out_channels, out_channels, ksize=ksize, pad=pad, initialW=initializer)
             self.c_sc = SNConvolution2D(in_channels, out_channels, ksize=1, pad=0, initialW=initializer_sc)
 
-            xp = cuda.get_array_module(self.c1.W.data)
-
-            print("CORAL")
-
-            self.c1.u = xp.ones((1, 128)).astype(np.float32)
-            self.c2.u = xp.ones((1, 128)).astype(np.float32)
-            self.c_sc.u = xp.ones((1, 128)).astype(np.float32)
+            self.c1.u = np.ones((1, 128)).astype(np.float32)
+            self.c2.u = np.ones((1, 128)).astype(np.float32)
+            self.c_sc.u = np.ones((1, 128)).astype(np.float32)
 
 
     def residual(self, x):
