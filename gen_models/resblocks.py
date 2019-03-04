@@ -39,6 +39,9 @@ class Block(chainer.Chain):
 
     def residual(self, x, y=None, z=None, **kwargs):
         h = x
+
+        print(kwargs)
+
         h = self.b1(h, y, **kwargs) if y is not None else self.b1(h, **kwargs)
         h = self.activation(h)
         h = upsample_conv(h, self.c1) if self.upsample else self.c1(h)
