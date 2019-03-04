@@ -4,8 +4,7 @@ from source.links.sn_embed_id import SNEmbedID
 from source.links.sn_linear import SNLinear
 from dis_models.resblocks import Block, OptimizedBlock
 from source.miscs.random_samples import seed_weights
-
-
+import numpy as np
 
 class SNResNetProjectionDiscriminator(chainer.Chain):
     def __init__(self, ch=128, n_classes=0, activation=F.relu):
