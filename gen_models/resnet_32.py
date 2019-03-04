@@ -14,12 +14,12 @@ class ResNetGenerator(chainer.Chain):
         self.dim_z = dim_z
         self.n_classes = n_classes
         with self.init_scope():
-            self.l1 = L.Linear(dim_z, (bottom_width ** 2) * ch, initialW=chainer.initializers.One())
+            self.l1 = L.Linear(dim_z, (bottom_width ** 2) * ch, initialW=chainer.initializers.Zero())
             self.block2 = Block(ch, ch, activation=activation, upsample=True, n_classes=n_classes)
             self.block3 = Block(ch, ch, activation=activation, upsample=True, n_classes=n_classes)
             self.block4 = Block(ch, ch, activation=activation, upsample=True, n_classes=n_classes)
             self.b5 = L.BatchNormalization(ch)
-            self.c5 = L.Convolution2D(ch, 3, ksize=3, stride=1, pad=1, initialW=chainer.initializers.One())
+            self.c5 = L.Convolution2D(ch, 3, ksize=3, stride=1, pad=1, initialW=chainer.initializers.Zero())
 
     def sample_z(self, batchsize=64):
         return sample_continuous(self.dim_z, batchsize, distribution=self.distribution, xp=self.xp)
