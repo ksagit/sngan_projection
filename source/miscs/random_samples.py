@@ -38,7 +38,7 @@ def sample_from_categorical_distribution(batch_probs):
 
 
 def seed_weights(model, seed=0):
-    for param in net.params():
+    for param in model.params():
         xp = cuda.get_array_module(param.data)
 
         np.random.seed(seed)
