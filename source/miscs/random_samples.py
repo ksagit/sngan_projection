@@ -1,6 +1,6 @@
 import numpy as np
 import chainer
-
+from chainer import cuda
 
 
 def sample_continuous(dim, batchsize, distribution='normal', xp=np):
