@@ -20,7 +20,6 @@ class ResNetGenerator(chainer.Chain):
             self.block4 = Block(ch, ch, activation=activation, upsample=True, n_classes=n_classes)
             self.b5 = L.BatchNormalization(ch)
             self.c5 = L.Convolution2D(ch, 3, ksize=3, stride=1, pad=1, initialW=chainer.initializers.GlorotUniform())
-
         seed_weights(self)
 
     def sample_z(self, batchsize=64):

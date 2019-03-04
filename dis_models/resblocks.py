@@ -25,6 +25,11 @@ class Block(chainer.Chain):
             self.c2 = SNConvolution2D(hidden_channels, out_channels, ksize=ksize, pad=pad, initialW=initializer)
             if self.learnable_sc:
                 self.c_sc = SNConvolution2D(in_channels, out_channels, ksize=1, pad=0, initialW=initializer_sc)
+                self.c_sc.u = np.ones((1, out_channels)).astype(np.float32)
+                
+            self.c1.u = np.ones((1, 128)).astype(np.float32)
+            self.c2.u = np.ones((1, 128)).astype(np.float32)
+            
 
     def residual(self, x):
         h = x
