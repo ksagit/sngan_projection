@@ -88,17 +88,15 @@ class Updater(chainer.training.StandardUpdater):
                 gen.cleargrads()
                 loss_gen.backward()
 
+                print(dis_fake)
+                print(loss_gen)
+
                 print(checksum(gen))
                 gen_optimizer.update()
                 print(checksum(gen))
                 chainer.reporter.report({'loss_gen': loss_gen})
 
-                print(x_fake, np.sum(x_fake.data))
-                print(dis_fake)
-                print(loss_gen)
-
-
-
+                # print(x_fake, np.sum(x_fake.data))
             _ = input()
 
             x_real, y_real = self.get_batch(xp)
