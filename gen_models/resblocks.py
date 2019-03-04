@@ -3,7 +3,7 @@ import chainer
 import chainer.links as L
 from chainer import functions as F
 from source.links.categorical_conditional_batch_normalization import CategoricalConditionalBatchNormalization
-
+import numpy as np
 
 def _upsample(x):
     h, w = x.shape[2:]
