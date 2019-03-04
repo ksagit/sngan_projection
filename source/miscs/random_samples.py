@@ -35,3 +35,11 @@ def sample_from_categorical_distribution(batch_probs):
     return xp.argmax(
         xp.log(batch_probs) + xp.random.gumbel(size=batch_probs.shape),
         axis=1).astype(np.int32, copy=False)
+
+
+def seed_weights(model, seed=0):
+    for param in net.params():
+        xp = cuda.get_array_module(param.data)
+
+        np.random.seed(seed)
+        param.data = .05 * xp.array(np.random.randn(*param.shape).astype(np.float32))

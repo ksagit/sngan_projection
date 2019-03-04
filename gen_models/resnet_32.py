@@ -2,7 +2,7 @@ import chainer
 import chainer.links as L
 from chainer import functions as F
 from gen_models.resblocks import Block
-from source.miscs.random_samples import sample_categorical, sample_continuous
+from source.miscs.random_samples import sample_categorical, sample_continuous, seed_weights
 
 
 class ResNetGenerator(chainer.Chain):
@@ -14,12 +14,14 @@ class ResNetGenerator(chainer.Chain):
         self.dim_z = dim_z
         self.n_classes = n_classes
         with self.init_scope():
-            self.l1 = L.Linear(dim_z, (bottom_width ** 2) * ch, initialW=chainer.initializers.Zero())
+            self.l1 = L.Linear(dim_z, (bottom_width ** 2) * ch, initialW=chainer.initializers.GlorotUniform())
             self.block2 = Block(ch, ch, activation=activation, upsample=True, n_classes=n_classes)
             self.block3 = Block(ch, ch, activation=activation, upsample=True, n_classes=n_classes)
             self.block4 = Block(ch, ch, activation=activation, upsample=True, n_classes=n_classes)
             self.b5 = L.BatchNormalization(ch)
-            self.c5 = L.Convolution2D(ch, 3, ksize=3, stride=1, pad=1, initialW=chainer.initializers.Zero())
+            self.c5 = L.Convolution2D(ch, 3, ksize=3, stride=1, pad=1, initialW=chainer.initializers.GlorotUniform())
+
+        seed_weights(self)
 
     def sample_z(self, batchsize=64):
         return sample_continuous(self.dim_z, batchsize, distribution=self.distribution, xp=self.xp)
@@ -38,7 +40,6 @@ class ResNetGenerator(chainer.Chain):
         h = z
         h = self.l1(h)
         h = F.reshape(h, (h.shape[0], -1, self.bottom_width, self.bottom_width))
-
         h = self.block2(h, y)
         h = self.block3(h, y)
         h = self.block4(h, y)

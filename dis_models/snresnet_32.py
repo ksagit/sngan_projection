@@ -3,6 +3,8 @@ from chainer import functions as F
 from source.links.sn_embed_id import SNEmbedID
 from source.links.sn_linear import SNLinear
 from dis_models.resblocks import Block, OptimizedBlock
+from source.miscs.random_samples import seed_weights
+
 
 
 class SNResNetProjectionDiscriminator(chainer.Chain):
@@ -14,9 +16,10 @@ class SNResNetProjectionDiscriminator(chainer.Chain):
             self.block2 = Block(ch, ch, activation=activation, downsample=True)
             self.block3 = Block(ch, ch, activation=activation, downsample=False)
             self.block4 = Block(ch, ch, activation=activation, downsample=False)
-            self.l5 = SNLinear(ch, 1, initialW=chainer.initializers.One(), nobias=True)
+            self.l5 = SNLinear(ch, 1, initialW=chainer.initializers.GlorotUniform(), nobias=True)
             if n_classes > 0:
                 self.l_y = SNEmbedID(n_classes, ch, initialW=chainer.initializers.GlorotUniform())
+        seed_weights(self)
 
     def __call__(self, x, y=None):
         h = x
