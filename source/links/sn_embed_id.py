@@ -58,9 +58,6 @@ class SNEmbedID(link.Link):
             sigma = sigma / self.factor
         sigma = broadcast_to(sigma.reshape((1, 1)), self.W.shape)
         self.u[:] = _u
-
-        print(sigma, _u)
-
         return self.W / sigma
 
     def __call__(self, x):

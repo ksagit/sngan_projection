@@ -34,7 +34,6 @@ class Block(chainer.Chain):
             else:
                 self.b1 = L.BatchNormalization(in_channels)
                 self.b2 = L.BatchNormalization(hidden_channels)
-
             if self.learnable_sc:
                 self.c_sc = L.Convolution2D(in_channels, out_channels, ksize=1, pad=0, initialW=initializer_sc)
 
