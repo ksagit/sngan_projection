@@ -97,7 +97,7 @@ class Updater(chainer.training.StandardUpdater):
                 chainer.reporter.report({'loss_gen': loss_gen})
 
                 # print(x_fake, np.sum(x_fake.data))
-            _ = input()
+                _ = input()
 
             x_real, y_real = self.get_batch(xp)
             batchsize = len(x_real)
