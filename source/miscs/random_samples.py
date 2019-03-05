@@ -8,7 +8,7 @@ def sample_continuous(dim, batchsize, distribution='normal', xp=np):
 
     if distribution == "normal":
         arr = np.random.randn(batchsize, dim) \
-            .astype(np.float64)
+            .astype(np.float32)
         return xp.array(arr)
     elif distribution == "uniform":
         return xp.random.uniform(-1, 1, (batchsize, dim)) \

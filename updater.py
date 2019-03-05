@@ -72,44 +72,51 @@ class Updater(chainer.training.StandardUpdater):
         y_real = Variable(xp.asarray(y, dtype=xp.int32)) if self.conditional else None
         return x_real, y_real
 
+iteration = 0 
+
     def update_core(self):
+
+        global iteration
+
         gen = self.models['gen']
         dis = self.models['dis']
         gen_optimizer = self.get_optimizer('opt_gen')
         dis_optimizer = self.get_optimizer('opt_dis')
         xp = gen.xp
-        for i in range(self.n_dis):
-            if i == 0:
-                x_fake, y_fake = self._generete_samples()
+
+        if iteration % 10000 == 0:
+            for i in range(self.n_dis):
+                if i == 0:
+                    x_fake, y_fake = self._generete_samples()
+                    dis_fake = dis(x_fake, y=y_fake)
+                    loss_gen = self.loss_gen(dis_fake=dis_fake)
+
+                    gen.cleargrads()
+                    loss_gen.backward()
+
+                    print(loss_gen)
+                    print(checksum(gen))
+                    gen_optimizer.update()
+                    print(checksum(gen))
+                    chainer.reporter.report({'loss_gen': loss_gen})
+
+                x_real, y_real = self.get_batch(xp)
+                batchsize = len(x_real)
+                dis_real = dis(x_real, y=y_real)
+                x_fake, y_fake = self._generete_samples(n_gen_samples=batchsize)
                 dis_fake = dis(x_fake, y=y_fake)
-                loss_gen = self.loss_gen(dis_fake=dis_fake)
+                x_fake.unchain_backward()
 
-                gen.cleargrads()
-                loss_gen.backward()
+                loss_dis = self.loss_dis(dis_fake=dis_fake, dis_real=dis_real)
+                dis.cleargrads()
+                loss_dis.backward()
 
-                print(loss_gen)
-                print(checksum(gen))
-                gen_optimizer.update()
-                print(checksum(gen))
-                chainer.reporter.report({'loss_gen': loss_gen})
+                print(loss_dis)
+                print(checksum(dis))           
+                dis_optimizer.update()
+                print(checksum(dis))
+                _ = input()
 
-            x_real, y_real = self.get_batch(xp)
-            batchsize = len(x_real)
-            dis_real = dis(x_real, y=y_real)
-            x_fake, y_fake = self._generete_samples(n_gen_samples=batchsize)
-            dis_fake = dis(x_fake, y=y_fake)
-            x_fake.unchain_backward()
-
-            loss_dis = self.loss_dis(dis_fake=dis_fake, dis_real=dis_real)
-            dis.cleargrads()
-            loss_dis.backward()
-
-            print(loss_dis)
-            print(checksum(dis))           
-            dis_optimizer.update()
-            print(checksum(dis))
-            _ = input()
-
-            chainer.reporter.report({'loss_dis': loss_dis})
+                chainer.reporter.report({'loss_dis': loss_dis})
 
             
