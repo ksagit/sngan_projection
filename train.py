@@ -46,6 +46,9 @@ def make_optimizer(model, alpha=0.0002, beta1=0., beta2=0.9):
     optimizer.setup(model)
     return optimizer
 
+def double(model):
+    for param in model.params():
+        param.data = param.data.astype(np.float64)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -67,6 +70,10 @@ def main():
     gen, dis = load_models(config)
     gen.to_gpu(device=args.gpu)
     dis.to_gpu(device=args.gpu)
+
+    double(gen)
+    double(dis)
+
     models = {"gen": gen, "dis": dis}
     # Optimizer
     opt_gen = make_optimizer(
