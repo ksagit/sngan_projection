@@ -47,10 +47,6 @@ def make_optimizer(model, alpha=0.0002, beta1=0., beta2=0.9):
     optimizer.setup(model)
     return optimizer
 
-def double(model):
-    for param in model.params():
-        param.data = param.data.astype(np.float64)
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_path', type=str, default='configs/base.yml', help='path to config file')
@@ -71,9 +67,6 @@ def main():
     gen, dis = load_models(config)
     gen.to_gpu(device=args.gpu)
     dis.to_gpu(device=args.gpu)
-
-    double(gen)
-    double(dis)
 
     models = {"gen": gen, "dis": dis}
     # Optimizer

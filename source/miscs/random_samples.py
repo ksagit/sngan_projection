@@ -42,4 +42,4 @@ def seed_weights(model, seed=0):
         xp = cuda.get_array_module(param.data)
 
         np.random.seed(seed)
-        param.data = .05 * xp.array(np.random.randn(*param.shape).astype(np.float64))
+        param.data = .05 * xp.array(np.random.randn(*param.shape).astype(np.float32))
