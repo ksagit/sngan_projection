@@ -47,6 +47,8 @@ class Updater(chainer.training.StandardUpdater):
             self.loss_dis = loss_hinge_dis
         else:
             raise NotImplementedError
+
+        self.kyle_iteration = 0 
         super(Updater, self).__init__(*args, **kwargs)
 
     def _generete_samples(self, n_gen_samples=None):
@@ -72,19 +74,16 @@ class Updater(chainer.training.StandardUpdater):
         y_real = Variable(xp.asarray(y, dtype=xp.int32)) if self.conditional else None
         return x_real, y_real
 
-iteration = 0 
+    
 
     def update_core(self):
-
-        global iteration
-
         gen = self.models['gen']
         dis = self.models['dis']
         gen_optimizer = self.get_optimizer('opt_gen')
         dis_optimizer = self.get_optimizer('opt_dis')
         xp = gen.xp
 
-        if iteration % 10000 == 0:
+        if self.kyle_iteration % 10000 == 0:
             for i in range(self.n_dis):
                 if i == 0:
                     x_fake, y_fake = self._generete_samples()
@@ -118,5 +117,6 @@ iteration = 0
                 _ = input()
 
                 chainer.reporter.report({'loss_dis': loss_dis})
+        self.kyle_iteration += 1
 
             
