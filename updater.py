@@ -81,23 +81,20 @@ class Updater(chainer.training.StandardUpdater):
         for i in range(self.n_dis):
             if i == 0:
                 x_fake, y_fake = self._generete_samples()
-                
+
+                x_fake = xp.array(x_fake.astype(np.float64))
+
                 dis_fake = dis(x_fake, y=y_fake)
                 loss_gen = self.loss_gen(dis_fake=dis_fake)
 
                 gen.cleargrads()
                 loss_gen.backward()
 
-                print(dis_fake)
                 print(loss_gen)
-
                 print(checksum(gen))
                 gen_optimizer.update()
                 print(checksum(gen))
                 chainer.reporter.report({'loss_gen': loss_gen})
-
-                # print(x_fake, np.sum(x_fake.data))
-                _ = input()
 
             x_real, y_real = self.get_batch(xp)
             batchsize = len(x_real)
@@ -109,7 +106,13 @@ class Updater(chainer.training.StandardUpdater):
             loss_dis = self.loss_dis(dis_fake=dis_fake, dis_real=dis_real)
             dis.cleargrads()
             loss_dis.backward()
+
+            print(loss_dis)
+            print(checksum(dis))           
             dis_optimizer.update()
+            print(checksum(dis))
+            _ = input()
+
             chainer.reporter.report({'loss_dis': loss_dis})
 
             

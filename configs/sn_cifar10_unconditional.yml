@@ -41,7 +41,7 @@ updater:
   fn: updater.py
   name: Updater
   args:
-    n_dis: 5
+    n_dis: 1
     n_gen_samples: 128
     conditional: False
     loss_type: hinge

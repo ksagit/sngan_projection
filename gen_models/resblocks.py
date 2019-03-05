@@ -39,12 +39,7 @@ class Block(chainer.Chain):
 
     def residual(self, x, y=None, z=None, **kwargs):
         h = x
-
-        print(h.shape)
-        print(np.sum(h.data))
         h = self.b1(h, y, **kwargs) if y is not None else self.b1(h, **kwargs)
-        print(np.sum(h.data))
-
         h = self.activation(h)
         h = upsample_conv(h, self.c1) if self.upsample else self.c1(h)
         h = self.b2(h, y, **kwargs) if y is not None else self.b2(h, **kwargs)

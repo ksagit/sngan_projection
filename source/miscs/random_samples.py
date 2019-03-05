@@ -8,7 +8,7 @@ def sample_continuous(dim, batchsize, distribution='normal', xp=np):
 
     if distribution == "normal":
         arr = np.random.randn(batchsize, dim) \
-            .astype(np.float32)
+            .astype(np.float64)
         return xp.array(arr)
     elif distribution == "uniform":
         return xp.random.uniform(-1, 1, (batchsize, dim)) \
@@ -42,4 +42,4 @@ def seed_weights(model, seed=0):
         xp = cuda.get_array_module(param.data)
 
         np.random.seed(seed)
-        param.data = .05 * xp.array(np.random.randn(*param.shape).astype(np.float32))
+        param.data = .05 * xp.array(np.random.randn(*param.shape).astype(np.float64))
