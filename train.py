@@ -7,6 +7,7 @@ import chainer
 from chainer import training
 from chainer.training import extension
 from chainer.training import extensions
+import numpy as np
 
 sys.path.append(os.path.dirname(__file__))
 

@@ -16,7 +16,7 @@ class SNResNetProjectionDiscriminator(chainer.Chain):
             self.block3 = Block(ch, ch, activation=activation, downsample=False)
             self.block4 = Block(ch, ch, activation=activation, downsample=False)
             self.l5 = SNLinear(ch, 1, initialW=chainer.initializers.GlorotUniform(), nobias=True)
-            self.l5.u = np.ones((1, 1)).astype(np.float32)
+            self.l5.u = np.ones((1, 1)).astype(np.float64)
 
             if n_classes > 0:
                 self.l_y = SNEmbedID(n_classes, ch, initialW=chainer.initializers.GlorotUniform())
