@@ -81,9 +81,6 @@ class Updater(chainer.training.StandardUpdater):
         for i in range(self.n_dis):
             if i == 0:
                 x_fake, y_fake = self._generete_samples()
-
-                x_fake = xp.array(x_fake.astype(np.float64))
-
                 dis_fake = dis(x_fake, y=y_fake)
                 loss_gen = self.loss_gen(dis_fake=dis_fake)
 
