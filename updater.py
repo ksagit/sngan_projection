@@ -83,6 +83,7 @@ class Updater(chainer.training.StandardUpdater):
         dis_optimizer = self.get_optimizer('opt_dis')
         xp = gen.xp
 
+        x_real, y_real = self.get_batch(xp)
         if self.kyle_iteration % 10000 == 0:
             for i in range(self.n_dis):
                 if i == 0:
@@ -99,7 +100,7 @@ class Updater(chainer.training.StandardUpdater):
                     print(checksum(gen))
                     chainer.reporter.report({'loss_gen': loss_gen})
 
-                x_real, y_real = self.get_batch(xp)
+                
                 batchsize = len(x_real)
                 dis_real = dis(x_real, y=y_real)
                 x_fake, y_fake = self._generete_samples(n_gen_samples=batchsize)
