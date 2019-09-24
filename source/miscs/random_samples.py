@@ -1,18 +1,18 @@
 import numpy as np
 import chainer
-from chainer import cuda
 
 
 def sample_continuous(dim, batchsize, distribution='normal', xp=np):
-    np.random.seed(0)
-
     if distribution == "normal":
-        arr = np.random.randn(batchsize, dim) \
-            .astype(np.float32)
-        return xp.array(arr)
+        np.random.seed(0)
+        ret = np.random.randn(batchsize, dim) \
+            .astype(np.float64)
+        ret = xp.asarray(ret)
+        # print("Z to gen\t", np.sum(ret))
+        return ret
     elif distribution == "uniform":
         return xp.random.uniform(-1, 1, (batchsize, dim)) \
-            .astype(xp.float32)
+            .astype(xp.float64)
     else:
         raise NotImplementedError
 
@@ -35,11 +35,3 @@ def sample_from_categorical_distribution(batch_probs):
     return xp.argmax(
         xp.log(batch_probs) + xp.random.gumbel(size=batch_probs.shape),
         axis=1).astype(np.int32, copy=False)
-
-
-def seed_weights(model, seed=0):
-    for param in model.params():
-        xp = cuda.get_array_module(param.data)
-
-        np.random.seed(seed)
-        param.data = .05 * xp.array(np.random.randn(*param.shape).astype(np.float32))

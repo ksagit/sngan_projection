@@ -38,111 +38,30 @@ class Block(chainer.Chain):
 
     def residual(self, x, y=None, z=None, **kwargs):
         h = x
-        print(kwargs)
-        print("\t\tBL0", np.sum(h.data))
-        prevb = copy.deepcopy(self.c2.b)
-        prevb_sum = F.sum(self.c2.b.data)        
-        print("\t\tC2B_0", F.sum(self.c2.b.data))
-        print("\t\tC2B_0", F.sum(self.c2.b.grad))
 
-        with chainer.no_backprop_mode():
-            h = self.b1(h)
-        print("\t\tC2B_0", F.sum(self.c2.b.grad))
-        postb = copy.deepcopy(self.c2.b)
-        postb_sum = F.sum(postb)
-        if (prevb_sum.data != postb_sum.data):
-            print(prevb.debug_print())
-            print(prevb_sum)
-            print(type(prevb))
-            print(postb.debug_print())
-            print(postb_sum)
-            print(type(postb))
-            raise ValueError("Yep")
-        prevb = copy.deepcopy(postb)
-        prevb_sum = postb_sum
-        print("\t\tBL1", F.sum(h.data))
-        
-        print("\t\tC2B_1", F.sum(self.c2.b.data))
+        print("\t\t", F.sum(h.data))
+        print("\t\tCL", F.sum(self.c2.b.data))
+        h = self.b1(h)
 
+        print("\t\t", F.sum(h.data))
+        print("\t\tCL", F.sum(self.c2.b.data))
         h = self.activation(h)
-        postb = copy.deepcopy(self.c2.b)
-        postb_sum = F.sum(postb)
-        if (prevb_sum.data != postb_sum.data):
-            print(prevb.debug_print())
-            print(prevb_sum)
-            print(type(prevb))
-            print(postb.debug_print())
-            print(postb_sum)
-            print(type(postb))
-            raise ValueError("Yep")
-        prevb = copy.deepcopy(postb)
-        prevb_sum = postb_sum
-        print("\t\tC2B_2", F.sum(self.c2.b.data))
 
+        print("\t\t", F.sum(h.data))
+        print("\t\tCL5", F.sum(self.c2.b.data))
         h = upsample_conv(h, self.c1) if self.upsample else self.c1(h)
-        print("\t\tBL4", F.sum(h.data))
-        postb = copy.deepcopy(self.c2.b)
-        postb_sum = F.sum(postb)
-        if (prevb_sum.data != postb_sum.data):
-            print(prevb.debug_print())
-            print(prevb_sum)
-            print(type(prevb))
-            print(postb.debug_print())
-            print(postb_sum)
-            print(type(postb))
-            raise ValueError("Yep")
-        prevb = copy.deepcopy(postb)
-        prevb_sum = postb_sum
-        print("\t\tC2B_4", F.sum(self.c2.b.data))
 
-        with chainer.no_backprop_mode():
-            h = self.b2(h, y, **kwargs) if y is not None else self.b2(h, **kwargs)
-        print("\t\tBL5", F.sum(h.data))
-        postb = copy.deepcopy(self.c2.b)
-        postb_sum = F.sum(postb)
-        if (prevb_sum.data != postb_sum.data):
-            print(prevb.debug_print())
-            print(prevb_sum)
-            print(type(prevb))
-            print(postb.debug_print())
-            print(postb_sum)
-            print(type(postb))
-            raise ValueError("Yep")
-        prevb = copy.deepcopy(postb)
-        prevb_sum = postb_sum
-        print("\t\tC2B_5", F.sum(self.c2.b.data))
+        print("\t\t", F.sum(h.data))
+        print("\t\tCL5", F.sum(self.c2.b.data))
+        h = self.b2(h, y, **kwargs) if y is not None else self.b2(h, **kwargs)
 
+        print("\t\t", F.sum(h.data))
+        print("\t\tCL5", F.sum(self.c2.b.data))
         h = self.activation(h)
-        print("\t\tBL6", F.sum(h.data))
-        postb = copy.deepcopy(self.c2.b)
-        postb_sum = F.sum(postb)
-        if (prevb_sum.data != postb_sum.data):
-            print(prevb.debug_print())
-            print(prevb_sum)
-            print(type(prevb))
-            print(postb.debug_print())
-            print(postb_sum)
-            print(type(postb))
-            raise ValueError("Yep")
-        prevb = copy.deepcopy(postb)
-        prevb_sum = postb_sum
-        print("\t\tC2B_6", F.sum(self.c2.b.data))
 
+        print("\t\t", F.sum(h.data))
+        print("\t\tCL5", F.sum(self.c2.b.data))
         h = self.c2(h)
-        print("\t\tBL7", F.sum(h.data))
-        postb = copy.deepcopy(self.c2.b)
-        postb_sum = F.sum(postb)
-        if (prevb_sum.data != postb_sum.data):
-            print(prevb.debug_print())
-            print(prevb_sum)
-            print(type(prevb))
-            print(postb.debug_print())
-            print(postb_sum)
-            print(type(postb))
-            raise ValueError("Yep")
-        prevb = copy.deepcopy(postb)
-        prevb_sum = postb_sum
-        print("\t\tC2B_7", F.sum(self.c2.b.data))
 
         print("\tRSUM", F.sum(h.data))
         return h
