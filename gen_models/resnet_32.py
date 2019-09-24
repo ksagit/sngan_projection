@@ -2,7 +2,8 @@ import chainer
 import chainer.links as L
 from chainer import functions as F
 from gen_models.resblocks import Block
-from source.miscs.random_samples import sample_categorical, sample_continuous, seed_weights
+from source.miscs.random_samples import sample_categorical, sample_continuous
+import numpy as np
 
 
 class ResNetGenerator(chainer.Chain):
@@ -20,7 +21,6 @@ class ResNetGenerator(chainer.Chain):
             self.block4 = Block(ch, ch, activation=activation, upsample=True, n_classes=n_classes)
             self.b5 = L.BatchNormalization(ch)
             self.c5 = L.Convolution2D(ch, 3, ksize=3, stride=1, pad=1, initialW=chainer.initializers.GlorotUniform())
-        seed_weights(self)
 
     def sample_z(self, batchsize=64):
         return sample_continuous(self.dim_z, batchsize, distribution=self.distribution, xp=self.xp)
@@ -36,13 +36,37 @@ class ResNetGenerator(chainer.Chain):
                                    xp=self.xp) if self.n_classes > 0 else None
         if (y is not None) and z.shape[0] != y.shape[0]:
             raise ValueError('z.shape[0] != y.shape[0]')
+        print("B0", np.sum(z.data))
+        print("C2B0", np.sum(self.block2.c2.b.data))
+        
         h = z
         h = self.l1(h)
         h = F.reshape(h, (h.shape[0], -1, self.bottom_width, self.bottom_width))
+        print("B1", np.sum(h.data))
+        print("C2B1", np.sum(self.block2.c2.b.data))
+
         h = self.block2(h, y)
+        print("B2", np.sum(h.data))
+        print("C2B2", np.sum(self.block2.c2.b.data))
+
         h = self.block3(h, y)
+        print("B3", np.sum(h.data))
+        print("C2B3", np.sum(self.block2.c2.b.data))
+
         h = self.block4(h, y)
+        print("B4", np.sum(h.data))
+        print("C2B4", np.sum(self.block2.c2.b.data))
+
         h = self.b5(h)
+        print("B5", np.sum(h.data))
+        print("C2B5", np.sum(self.block2.c2.b.data))
+
         h = self.activation(h)
+        print("B6", np.sum(h.data))
+        print("C2B6", np.sum(self.block2.c2.b.data))
+
         h = F.tanh(self.c5(h))
+        print("B7", np.sum(h.data))
+        print("C2B7", np.sum(self.block2.c2.b.data))
+
         return h

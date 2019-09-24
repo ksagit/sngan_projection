@@ -4,6 +4,8 @@ import chainer.links as L
 from chainer import functions as F
 from source.links.categorical_conditional_batch_normalization import CategoricalConditionalBatchNormalization
 import numpy as np
+import copy
+import cupy as xp
 
 def _upsample(x):
     h, w = x.shape[2:]
@@ -28,30 +30,130 @@ class Block(chainer.Chain):
         with self.init_scope():
             self.c1 = L.Convolution2D(in_channels, hidden_channels, ksize=ksize, pad=pad, initialW=initializer)
             self.c2 = L.Convolution2D(hidden_channels, out_channels, ksize=ksize, pad=pad, initialW=initializer)
-            if n_classes > 0:
-                self.b1 = CategoricalConditionalBatchNormalization(in_channels, n_cat=n_classes)
-                self.b2 = CategoricalConditionalBatchNormalization(hidden_channels, n_cat=n_classes)
-            else:
-                self.b1 = L.BatchNormalization(in_channels)
-                self.b2 = L.BatchNormalization(hidden_channels)
+
+            self.b1 = L.BatchNormalization(in_channels)
+            self.b2 = L.BatchNormalization(out_channels)
             if self.learnable_sc:
                 self.c_sc = L.Convolution2D(in_channels, out_channels, ksize=1, pad=0, initialW=initializer_sc)
 
     def residual(self, x, y=None, z=None, **kwargs):
         h = x
-        h = self.b1(h, y, **kwargs) if y is not None else self.b1(h, **kwargs)
+        print(kwargs)
+        print("\t\tBL0", np.sum(h.data))
+        prevb = copy.deepcopy(self.c2.b)
+        prevb_sum = F.sum(self.c2.b.data)        
+        print("\t\tC2B_0", F.sum(self.c2.b.data))
+        print("\t\tC2B_0", F.sum(self.c2.b.grad))
+
+        with chainer.no_backprop_mode():
+            h = self.b1(h)
+        print("\t\tC2B_0", F.sum(self.c2.b.grad))
+        postb = copy.deepcopy(self.c2.b)
+        postb_sum = F.sum(postb)
+        if (prevb_sum.data != postb_sum.data):
+            print(prevb.debug_print())
+            print(prevb_sum)
+            print(type(prevb))
+            print(postb.debug_print())
+            print(postb_sum)
+            print(type(postb))
+            raise ValueError("Yep")
+        prevb = copy.deepcopy(postb)
+        prevb_sum = postb_sum
+        print("\t\tBL1", F.sum(h.data))
+        
+        print("\t\tC2B_1", F.sum(self.c2.b.data))
+
         h = self.activation(h)
+        postb = copy.deepcopy(self.c2.b)
+        postb_sum = F.sum(postb)
+        if (prevb_sum.data != postb_sum.data):
+            print(prevb.debug_print())
+            print(prevb_sum)
+            print(type(prevb))
+            print(postb.debug_print())
+            print(postb_sum)
+            print(type(postb))
+            raise ValueError("Yep")
+        prevb = copy.deepcopy(postb)
+        prevb_sum = postb_sum
+        print("\t\tC2B_2", F.sum(self.c2.b.data))
+
         h = upsample_conv(h, self.c1) if self.upsample else self.c1(h)
-        h = self.b2(h, y, **kwargs) if y is not None else self.b2(h, **kwargs)
+        print("\t\tBL4", F.sum(h.data))
+        postb = copy.deepcopy(self.c2.b)
+        postb_sum = F.sum(postb)
+        if (prevb_sum.data != postb_sum.data):
+            print(prevb.debug_print())
+            print(prevb_sum)
+            print(type(prevb))
+            print(postb.debug_print())
+            print(postb_sum)
+            print(type(postb))
+            raise ValueError("Yep")
+        prevb = copy.deepcopy(postb)
+        prevb_sum = postb_sum
+        print("\t\tC2B_4", F.sum(self.c2.b.data))
+
+        with chainer.no_backprop_mode():
+            h = self.b2(h, y, **kwargs) if y is not None else self.b2(h, **kwargs)
+        print("\t\tBL5", F.sum(h.data))
+        postb = copy.deepcopy(self.c2.b)
+        postb_sum = F.sum(postb)
+        if (prevb_sum.data != postb_sum.data):
+            print(prevb.debug_print())
+            print(prevb_sum)
+            print(type(prevb))
+            print(postb.debug_print())
+            print(postb_sum)
+            print(type(postb))
+            raise ValueError("Yep")
+        prevb = copy.deepcopy(postb)
+        prevb_sum = postb_sum
+        print("\t\tC2B_5", F.sum(self.c2.b.data))
+
         h = self.activation(h)
+        print("\t\tBL6", F.sum(h.data))
+        postb = copy.deepcopy(self.c2.b)
+        postb_sum = F.sum(postb)
+        if (prevb_sum.data != postb_sum.data):
+            print(prevb.debug_print())
+            print(prevb_sum)
+            print(type(prevb))
+            print(postb.debug_print())
+            print(postb_sum)
+            print(type(postb))
+            raise ValueError("Yep")
+        prevb = copy.deepcopy(postb)
+        prevb_sum = postb_sum
+        print("\t\tC2B_6", F.sum(self.c2.b.data))
+
         h = self.c2(h)
+        print("\t\tBL7", F.sum(h.data))
+        postb = copy.deepcopy(self.c2.b)
+        postb_sum = F.sum(postb)
+        if (prevb_sum.data != postb_sum.data):
+            print(prevb.debug_print())
+            print(prevb_sum)
+            print(type(prevb))
+            print(postb.debug_print())
+            print(postb_sum)
+            print(type(postb))
+            raise ValueError("Yep")
+        prevb = copy.deepcopy(postb)
+        prevb_sum = postb_sum
+        print("\t\tC2B_7", F.sum(self.c2.b.data))
+
+        print("\tRSUM", F.sum(h.data))
         return h
 
     def shortcut(self, x):
         if self.learnable_sc:
             x = upsample_conv(x, self.c_sc) if self.upsample else self.c_sc(x)
+            print("\tSCSUM", F.sum(x.data))
             return x
         else:
+            print("\tSCSUM", F.sum(x.data))
             return x
 
     def __call__(self, x, y=None, z=None, **kwargs):

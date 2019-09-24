@@ -47,6 +47,12 @@ def make_optimizer(model, alpha=0.0002, beta1=0., beta2=0.9):
     optimizer.setup(model)
     return optimizer
 
+def seed_weights(model):
+    for parameter in model.params():
+        np.random.seed(0)
+        parameter.data = np.random.randn(*parameter.data.shape).astype(np.float64) * .01
+        parameter.grad = np.zeros(parameter.data.shape).astype(np.float64)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config_path', type=str, default='configs/base.yml', help='path to config file')
@@ -68,6 +74,11 @@ def main():
     gen.to_gpu(device=args.gpu)
     dis.to_gpu(device=args.gpu)
 
+    seed_weights(gen)
+    seed_weights(dis)
+    print(np.sum(gen.block2.c2.b))
+    _ = input()
+
     models = {"gen": gen, "dis": dis}
     # Optimizer
     opt_gen = make_optimizer(
@@ -82,7 +93,7 @@ def main():
     dataset = yaml_utils.load_dataset(config)
     # Iterator
     iterator = chainer.iterators.MultiprocessIterator(
-        dataset, config.batchsize, n_processes=args.loaderjob, shuffle=False)
+        dataset, config.batchsize, n_processes=args.loaderjob)
     kwargs = config.updater['args'] if 'args' in config.updater else {}
     kwargs.update({
         'models': models,
